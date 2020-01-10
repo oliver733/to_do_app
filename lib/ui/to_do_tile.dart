@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:to_do_list/colors.dart';
 import 'package:to_do_list/data/to_do_model.dart';
 import 'package:intl/intl.dart';
@@ -9,30 +10,118 @@ class TodoTile extends StatelessWidget {
   TodoTile({@required this.item});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 100, // TODO: make responsive
-      padding: EdgeInsets.symmetric(vertical: 5),
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18.0),
+    return Slidable(
+      actionPane: SlidableBehindActionPane(),
+      actionExtentRatio: 0.3,
+      secondaryActions: [
+        GestureDetector(
+          onTap: () {
+            //TODO: remove via bloc
+          },
+          child: Container(
+            height: double.infinity,
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Card(
+              color: Colors.red,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+              child: Icon(
+                Icons.delete,
+                size: 30,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
-        color: MyColors.purpleBlue,
-        child: ListTile(
-          contentPadding: EdgeInsets.all(15),
-          // dense: true,
-          title: Text(
-            item.task,
-            style: TextStyle(color: Colors.white),
+      ],
+      child: Container(
+        height: 100, // TODO: make responsive
+        padding: EdgeInsets.symmetric(vertical: 5),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18.0),
           ),
-          leading: Text(
-            item.dateTime != null
-                ? "${DateFormat.jm().format(item.dateTime)}"
-                : "--:--",
-            style: TextStyle(color: Colors.white),
+          color: MyColors.purpleBlue,
+          child: ListTile(
+            contentPadding: EdgeInsets.all(15),
+            // dense: true,
+            title: Text(
+              item.task,
+              style: TextStyle(color: Colors.white),
+            ),
+            leading: Text(
+              item.dateTime != null
+                  ? "${DateFormat.jm().format(item.dateTime)}"
+                  : "--:--",
+              style: TextStyle(color: Colors.white),
+            ),
+            trailing: Icon(Icons.check_box, color: Colors.white),
           ),
-          trailing: Icon(Icons.check_box, color: Colors.white),
         ),
       ),
     );
   }
 }
+
+// return Slidable(
+//           actionPane: SlidableBehindActionPane(),
+//           actionExtentRatio: 0.3,
+//           actions: [
+//             IconSlideAction(
+//                 foregroundColor: Colors.white,
+//                 caption: 'Unfriend',
+//                 color: Colors.red[400],
+//                 icon: Icons.close,
+//                 onTap: () async {
+//                   try {
+//                     await CloudFunctionsService()
+//                         .unfriendUser(partnerId: partnerId);
+//                   } catch (e) {
+//                     print(e);
+//                   }
+//                 })
+//           ],
+//           secondaryActions: isLinked
+//               ? [
+//                   IconSlideAction(
+//                       foregroundColor: Colors.white,
+//                       caption: 'Unlink',
+//                       color: Colors.blue[200],
+//                       icon: Icons.link_off,
+//                       onTap: () async {
+//                         try {
+//                           await CloudFunctionsService()
+//                               .unlinkUser(partnerId: partnerId);
+//                         } catch (e) {
+//                           print(e);
+//                         }
+//                       })
+//                 ]
+//               : [
+//                   IconSlideAction(
+//                       foregroundColor: Colors.white,
+//                       caption: 'Link',
+//                       color: Colors.blue[400],
+//                       icon: Icons.link,
+//                       onTap: () async {
+//                         if (moreThan15Linked) {
+//                           _scaffoldKey.currentState.showSnackBar(SnackBar(
+//                               content: new Text(
+//                                   "Limit of 15 linked users reached.")));
+//                         } else {
+//                           try {
+//                             await CloudFunctionsService()
+//                                 .linkUser(partnerId: partnerId);
+//                           } catch (e) {
+//                             print(e);
+//                           }
+//                         }
+//                       }),
+//                 ],
+//           key: Key(partnerId),
+//           child: ChatTile(
+//             isClose: isLinked,
+//             partnerId: partnerId,
+//           ),
+//         );

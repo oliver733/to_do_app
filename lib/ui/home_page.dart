@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         child: Container(
             padding: EdgeInsets.all(10),
             child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               controller: _tabController,
               children: <Widget>[
                 CalenderView(),

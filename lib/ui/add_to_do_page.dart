@@ -3,6 +3,10 @@ import 'package:to_do_list/colors.dart';
 import 'package:intl/intl.dart';
 
 class AddToDoPage extends StatefulWidget {
+  final DateTime date;
+
+  AddToDoPage({this.date});
+
   @override
   _AddToDoPageState createState() => _AddToDoPageState();
 }
@@ -10,6 +14,14 @@ class AddToDoPage extends StatefulWidget {
 class _AddToDoPageState extends State<AddToDoPage> {
   TimeOfDay _selectedTime;
   DateTime _selectedDate;
+
+  @override
+  void initState() {
+    if (widget.date != null) {
+      _selectedDate = widget.date;
+    }
+    super.initState();
+  }
 
   Future<void> _selectTime() async {
     final TimeOfDay pickedTime = await showTimePicker(
@@ -33,7 +45,7 @@ class _AddToDoPageState extends State<AddToDoPage> {
         firstDate: DateTime(2000),
         lastDate: DateTime(2200),
         context: context,
-        initialDate: DateTime.now(),
+        initialDate: _selectedDate ?? DateTime.now(),
         builder: (BuildContext context, Widget child) {
           return MediaQuery(
             data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
@@ -45,11 +57,6 @@ class _AddToDoPageState extends State<AddToDoPage> {
       setState(() {
         _selectedDate = pickedDate;
       });
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override

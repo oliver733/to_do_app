@@ -3,8 +3,9 @@ import 'package:to_do_list/data/to_do_model.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:to_do_list/ui/to_do_tile.dart';
-
+import 'package:intl/intl.dart';
 import '../colors.dart';
+import 'add_to_do_page.dart';
 
 class CalenderView extends StatefulWidget {
   @override
@@ -51,6 +52,22 @@ class _CalenderViewState extends State<CalenderView>
     });
   }
 
+  String _getSelectedDateString() {
+    DateTime now = DateTime.now();
+
+    DateTime selectedDay =
+        DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
+    if (selectedDay == DateTime(now.year, now.month, now.day - 1)) {
+      return "Yesterday";
+    } else if (selectedDay == DateTime(now.year, now.month, now.day)) {
+      return "Today";
+    } else if (selectedDay == DateTime(now.year, now.month, now.day + 1)) {
+      return "Tomorrow";
+    } else {
+      return "${DateFormat.MMMEd().format(selectedDay)}";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -91,7 +108,7 @@ class _CalenderViewState extends State<CalenderView>
           child: Row(
             children: <Widget>[
               Text(
-                'Today',
+                _getSelectedDateString(),
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900),
               ),
               SizedBox(
@@ -100,7 +117,13 @@ class _CalenderViewState extends State<CalenderView>
               FloatingActionButton(
                 backgroundColor: MyColors.purpleBlue,
                 child: Icon(Icons.add),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              AddToDoPage(date: _selectedDay)));
+                },
               )
             ],
           ),
