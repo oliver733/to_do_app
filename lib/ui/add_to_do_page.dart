@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/colors.dart';
+import 'package:intl/intl.dart';
 
 class AddToDoPage extends StatefulWidget {
   @override
@@ -7,6 +8,50 @@ class AddToDoPage extends StatefulWidget {
 }
 
 class _AddToDoPageState extends State<AddToDoPage> {
+  TimeOfDay _selectedTime;
+  DateTime _selectedDate;
+
+  Future<void> _selectTime() async {
+    final TimeOfDay pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay(hour: 12, minute: 0),
+        builder: (BuildContext context, Widget child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+            child: child,
+          );
+        });
+
+    if (pickedTime != null && pickedTime != _selectedTime)
+      setState(() {
+        _selectedTime = pickedTime;
+      });
+  }
+
+  Future<void> _selectDate() async {
+    final DateTime pickedDate = await showDatePicker(
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2200),
+        context: context,
+        initialDate: DateTime.now(),
+        builder: (BuildContext context, Widget child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+            child: child,
+          );
+        });
+
+    if (pickedDate != null && pickedDate != _selectedDate)
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +82,7 @@ class _AddToDoPageState extends State<AddToDoPage> {
       child: ListView(
         children: <Widget>[
           TextField(
+            autofocus: true,
             maxLines: 4,
             style: TextStyle(
               color: Colors.black,
@@ -56,14 +102,31 @@ class _AddToDoPageState extends State<AddToDoPage> {
           Column(
             children: <Widget>[
               ListTile(
+                onTap: () async {
+                  _selectTime();
+                },
                 contentPadding: EdgeInsets.all(0),
                 leading: Icon(Icons.access_time),
-                title: Text("8:00 AM"),
+                title: _selectedTime == null
+                    ? Text(
+                        "All day",
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      )
+                    : Text(MaterialLocalizations.of(context)
+                        .formatTimeOfDay(_selectedTime)),
               ),
               ListTile(
+                onTap: () {
+                  _selectDate();
+                },
                 contentPadding: EdgeInsets.all(0),
                 leading: Icon(Icons.calendar_today),
-                title: Text("14 August 2020"),
+                title: _selectedDate == null
+                    ? Text(
+                        "No date selected",
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      )
+                    : Text("${DateFormat.yMMMd().format(_selectedDate)}"),
               ),
             ],
           )
