@@ -4,7 +4,7 @@ import 'package:to_do_list/data/to_do_model.dart';
 import 'package:intl/intl.dart';
 
 class TodoTile extends StatelessWidget {
-  final ToDoItem item;
+  final Todo item;
 
   TodoTile({@required this.item});
   @override
@@ -21,11 +21,13 @@ class TodoTile extends StatelessWidget {
           contentPadding: EdgeInsets.all(15),
           // dense: true,
           title: Text(
-            item.title,
+            item.task,
             style: TextStyle(color: Colors.white),
           ),
           leading: Text(
-            "${DateFormat.jm().format(item.dateTime)}",
+            item.dateTime != null
+                ? "${DateFormat.jm().format(item.dateTime)}"
+                : "--:--",
             style: TextStyle(color: Colors.white),
           ),
           trailing: Icon(Icons.check_box, color: Colors.white),
