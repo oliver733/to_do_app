@@ -19,9 +19,8 @@ class CalenderView extends StatefulWidget {
 
 class _CalenderViewState extends State<CalenderView>
     with TickerProviderStateMixin {
-  Map<DateTime, List> _eventsDateMap = {};
-
-  List _selectedItems = [];
+  Map<DateTime, List<Todo>> _timeTodosMap = {};
+  List<Todo> _selectedTodos = [];
   DateTime _selectedDay;
   AnimationController _animationController;
   CalendarController _calendarController;
@@ -32,15 +31,35 @@ class _CalenderViewState extends State<CalenderView>
     initializeDateFormatting();
     final today = DateTime.now();
     _selectedDay = DateTime(today.year, today.month, today.day);
-
     _calendarController = CalendarController();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
+    _updateEventsDateMap();
+  }
 
-    // _updateEventsDateMap(); --> via BLOC
+  void _updateEventsDateMap() async {
+    Map<DateTime, List<Todo>> timeTodosMap = {};
+    for (Todo todo in widget.todos) {
+      if (todo.dateTime != null) {
+        DateTime roundedDateTime = DateTime(
+            todo.dateTime.year, todo.dateTime.month, todo.dateTime.day);
+
+        timeTodosMap.update(roundedDateTime, (List<Todo> update) {
+          List<Todo> previousEvents = timeTodosMap[roundedDateTime];
+          previousEvents.add(todo);
+          return previousEvents;
+        }, ifAbsent: () => [todo]);
+      }
+    }
+    if (mounted) {
+      setState(() {
+        _timeTodosMap = timeTodosMap;
+        _selectedTodos = _timeTodosMap[_selectedDay] ?? [];
+      });
+    }
   }
 
   @override
@@ -50,10 +69,10 @@ class _CalenderViewState extends State<CalenderView>
     super.dispose();
   }
 
-  void _onDaySelected(DateTime day, List events) {
+  void _onDaySelected(DateTime day, dynamic todos) {
     setState(() {
       _selectedDay = day;
-      _selectedItems = events;
+      _selectedTodos = List<Todo>.from(todos);
     });
   }
 
@@ -86,7 +105,7 @@ class _CalenderViewState extends State<CalenderView>
             ),
             headerVisible: true,
             calendarController: _calendarController,
-            events: _eventsDateMap,
+            events: _timeTodosMap,
             startingDayOfWeek: StartingDayOfWeek.monday,
             calendarStyle: CalendarStyle(
                 weekendStyle: TextStyle(
@@ -136,9 +155,9 @@ class _CalenderViewState extends State<CalenderView>
         ),
         Expanded(
             child: ListView.builder(
-          itemCount: widget.todos.length,
+          itemCount: _selectedTodos.length,
           itemBuilder: (context, index) {
-            return TodoTile(item: widget.todos[index]);
+            return TodoTile(item: _selectedTodos[index]);
           },
         )),
       ],
