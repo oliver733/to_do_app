@@ -57,10 +57,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           controller: _tabController,
           children: <Widget>[
             CalenderView(
-              todos: toDoState.todos,
+              allTodos: toDoState.allTodos,
             ),
             DeadlineView(
-              todos: toDoState.todos,
+              todos: toDoState.allTodos.todos,
             ),
           ],
         );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/data/to_do_model.dart';
+import 'package:to_do_list/data/models/todo_item_model.dart';
 import 'package:to_do_list/ui/to_do_tile.dart';
 
 import '../colors.dart';

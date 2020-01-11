@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:to_do_list/colors.dart';
 import 'package:intl/intl.dart';
 import 'package:to_do_list/data/bloc/bloc.dart';
-import 'package:to_do_list/data/to_do_model.dart';
+import 'package:to_do_list/data/models/todo_item_model.dart';
 
 class AddToDoPage extends StatefulWidget {
   final DateTime date;

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:to_do_list/data/to_do_model.dart';
+import 'package:to_do_list/data/models/all_todos_model.dart';
+import 'package:to_do_list/data/models/todo_item_model.dart';
 
 abstract class ToDoState extends Equatable {
   const ToDoState();
@@ -11,15 +12,15 @@ class InitialToDoState extends ToDoState {
 }
 
 class TodosLoaded extends ToDoState {
-  final List<Todo> todos;
+  final AllTodos allTodos;
 
-  const TodosLoaded([this.todos = const []]);
-
-  @override
-  List<Object> get props => [todos];
+  const TodosLoaded([this.allTodos]);
 
   @override
-  String toString() => 'TodosLoaded { todos: $todos }';
+  List<Object> get props => [allTodos];
+
+  @override
+  String toString() => 'TodosLoaded { todos: $allTodos }';
 }
 
 class TodosNotLoaded extends ToDoState {

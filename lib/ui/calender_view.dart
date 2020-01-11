@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:to_do_list/data/to_do_model.dart';
+import 'package:to_do_list/data/models/all_todos_model.dart';
+import 'package:to_do_list/data/models/todo_item_model.dart';
 import 'package:to_do_list/ui/to_do_tile.dart';
 import 'package:intl/intl.dart';
 import '../colors.dart';
 import 'add_to_do_page.dart';
 
 class CalenderView extends StatefulWidget {
-  final List<Todo> todos;
+  final AllTodos allTodos;
 
-  CalenderView({@required this.todos});
+  CalenderView({@required this.allTodos});
 
   @override
   _CalenderViewState createState() => _CalenderViewState();
@@ -19,9 +20,8 @@ class CalenderView extends StatefulWidget {
 
 class _CalenderViewState extends State<CalenderView>
     with TickerProviderStateMixin {
-  Map<DateTime, List<Todo>> _timeTodosMap = {};
-  List<Todo> _selectedTodos = [];
   DateTime _selectedDay;
+  List<Todo> _selectedTodos = [];
   AnimationController _animationController;
   CalendarController _calendarController;
 
@@ -31,35 +31,13 @@ class _CalenderViewState extends State<CalenderView>
     initializeDateFormatting();
     final today = DateTime.now();
     _selectedDay = DateTime(today.year, today.month, today.day);
+    _selectedTodos = widget.allTodos.calenderMap[_selectedDay] ?? [];
     _calendarController = CalendarController();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
     _animationController.forward();
-    _updateEventsDateMap();
-  }
-
-  void _updateEventsDateMap() async {
-    Map<DateTime, List<Todo>> timeTodosMap = {};
-    for (Todo todo in widget.todos) {
-      if (todo.dateTime != null) {
-        DateTime roundedDateTime = DateTime(
-            todo.dateTime.year, todo.dateTime.month, todo.dateTime.day);
-
-        timeTodosMap.update(roundedDateTime, (List<Todo> update) {
-          List<Todo> previousEvents = timeTodosMap[roundedDateTime];
-          previousEvents.add(todo);
-          return previousEvents;
-        }, ifAbsent: () => [todo]);
-      }
-    }
-    if (mounted) {
-      setState(() {
-        _timeTodosMap = timeTodosMap;
-        _selectedTodos = _timeTodosMap[_selectedDay] ?? [];
-      });
-    }
   }
 
   @override
@@ -105,7 +83,7 @@ class _CalenderViewState extends State<CalenderView>
             ),
             headerVisible: true,
             calendarController: _calendarController,
-            events: _timeTodosMap,
+            events: widget.allTodos.calenderMap,
             startingDayOfWeek: StartingDayOfWeek.monday,
             calendarStyle: CalendarStyle(
                 weekendStyle: TextStyle(

@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:to_do_list/data/to_do_model.dart';
+import 'package:flutter/material.dart';
+import 'package:to_do_list/data/models/all_todos_model.dart';
+import 'package:to_do_list/data/models/todo_item_model.dart';
 import 'package:to_do_list/data/to_do_repository.dart';
 import './bloc.dart';
 
@@ -26,10 +28,11 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
   }
 
   Stream<ToDoState> _mapLoadTodosToState() async* {
-    print("loading todos");
     try {
       final List<Todo> todos = await _toDoRepository.loadTodos();
-      yield TodosLoaded(todos);
+      Map<DateTime, List<Todo>> calenderMap =
+          _updateEventsDateMap(todos: todos);
+      yield TodosLoaded(AllTodos(todos: todos, calenderMap: calenderMap));
     } catch (_) {
       yield TodosNotLoaded();
     }
@@ -37,19 +40,27 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
 
   Stream<ToDoState> _mapAddTodoToState(AddTodo event) async* {
     if (state is TodosLoaded) {
-      final List<Todo> updatedTodos = List.from((state as TodosLoaded).todos)
+      final List<Todo> updatedTodos = (state as TodosLoaded).allTodos.todos
         ..add(event.todo);
-      yield TodosLoaded(updatedTodos);
+      final Map<DateTime, List<Todo>> updatedCalenderMap =
+          _updateEventsDateMap(todos: updatedTodos);
+
+      yield TodosLoaded(
+          AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
       _saveTodos(updatedTodos);
     }
   }
 
   Stream<ToDoState> _mapUpdateTodoToState(UpdateTodo event) async* {
     if (state is TodosLoaded) {
-      final List<Todo> updatedTodos = (state as TodosLoaded).todos.map((todo) {
+      final List<Todo> updatedTodos =
+          (state as TodosLoaded).allTodos.todos.map((todo) {
         return todo.id == event.updatedTodo.id ? event.updatedTodo : todo;
       }).toList();
-      yield TodosLoaded(updatedTodos);
+      final Map<DateTime, List<Todo>> updatedCalenderMap =
+          _updateEventsDateMap(todos: updatedTodos);
+      yield TodosLoaded(
+          AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
       _saveTodos(updatedTodos);
     }
   }
@@ -57,10 +68,14 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
   Stream<ToDoState> _mapDeleteTodoToState(DeleteTodo event) async* {
     if (state is TodosLoaded) {
       final updatedTodos = (state as TodosLoaded)
+          .allTodos
           .todos
           .where((todo) => todo.id != event.todo.id)
           .toList();
-      yield TodosLoaded(updatedTodos);
+      final Map<DateTime, List<Todo>> updatedCalenderMap =
+          _updateEventsDateMap(todos: updatedTodos);
+      yield TodosLoaded(
+          AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
       _saveTodos(updatedTodos);
     }
   }
@@ -69,5 +84,23 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
     return _toDoRepository.saveTodos(todos: todos
         // todos.map((todo) => todo.toEntity()).toList(),
         );
+  }
+
+  Map<DateTime, List<Todo>> _updateEventsDateMap({@required List<Todo> todos}) {
+    Map<DateTime, List<Todo>> timeTodosMap = {};
+    for (Todo todo in todos) {
+      if (todo.dateTime != null) {
+        DateTime roundedDateTime = DateTime(
+            todo.dateTime.year, todo.dateTime.month, todo.dateTime.day);
+
+        timeTodosMap.update(roundedDateTime, (List<Todo> update) {
+          List<Todo> previousEvents = timeTodosMap[roundedDateTime];
+          previousEvents.add(todo);
+          return previousEvents;
+        }, ifAbsent: () => [todo]);
+      }
+    }
+
+    return timeTodosMap;
   }
 }
