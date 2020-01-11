@@ -14,11 +14,12 @@ class Todo extends Equatable {
     String id,
   }) : this.id = id ?? Uuid().v4();
 
-  Todo copyWith({bool complete, String id, String task}) {
+  Todo copyWith({bool complete, String id, String task, DateTime dateTime}) {
     // datetime TODO:
     return Todo(
       task ?? this.task,
       complete: complete ?? this.complete,
+      dateTime: this.dateTime,
       id: id ?? this.id,
     );
   }

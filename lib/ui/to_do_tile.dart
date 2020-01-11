@@ -13,6 +13,7 @@ class TodoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Slidable(
+      key: Key(item.id),
       actionPane: SlidableBehindActionPane(),
       actionExtentRatio: 0.3,
       secondaryActions: [
@@ -84,65 +85,3 @@ class TodoTile extends StatelessWidget {
     );
   }
 }
-
-// return Slidable(
-//           actionPane: SlidableBehindActionPane(),
-//           actionExtentRatio: 0.3,
-//           actions: [
-//             IconSlideAction(
-//                 foregroundColor: Colors.white,
-//                 caption: 'Unfriend',
-//                 color: Colors.red[400],
-//                 icon: Icons.close,
-//                 onTap: () async {
-//                   try {
-//                     await CloudFunctionsService()
-//                         .unfriendUser(partnerId: partnerId);
-//                   } catch (e) {
-//                     print(e);
-//                   }
-//                 })
-//           ],
-//           secondaryActions: isLinked
-//               ? [
-//                   IconSlideAction(
-//                       foregroundColor: Colors.white,
-//                       caption: 'Unlink',
-//                       color: Colors.blue[200],
-//                       icon: Icons.link_off,
-//                       onTap: () async {
-//                         try {
-//                           await CloudFunctionsService()
-//                               .unlinkUser(partnerId: partnerId);
-//                         } catch (e) {
-//                           print(e);
-//                         }
-//                       })
-//                 ]
-//               : [
-//                   IconSlideAction(
-//                       foregroundColor: Colors.white,
-//                       caption: 'Link',
-//                       color: Colors.blue[400],
-//                       icon: Icons.link,
-//                       onTap: () async {
-//                         if (moreThan15Linked) {
-//                           _scaffoldKey.currentState.showSnackBar(SnackBar(
-//                               content: new Text(
-//                                   "Limit of 15 linked users reached.")));
-//                         } else {
-//                           try {
-//                             await CloudFunctionsService()
-//                                 .linkUser(partnerId: partnerId);
-//                           } catch (e) {
-//                             print(e);
-//                           }
-//                         }
-//                       }),
-//                 ],
-//           key: Key(partnerId),
-//           child: ChatTile(
-//             isClose: isLinked,
-//             partnerId: partnerId,
-//           ),
-//         );

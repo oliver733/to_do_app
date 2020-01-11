@@ -21,7 +21,6 @@ class CalenderView extends StatefulWidget {
 class _CalenderViewState extends State<CalenderView>
     with TickerProviderStateMixin {
   DateTime _selectedDay;
-  List<Todo> _selectedTodos = [];
   AnimationController _animationController;
   CalendarController _calendarController;
 
@@ -31,7 +30,6 @@ class _CalenderViewState extends State<CalenderView>
     initializeDateFormatting();
     final today = DateTime.now();
     _selectedDay = DateTime(today.year, today.month, today.day);
-    _selectedTodos = widget.allTodos.calenderMap[_selectedDay] ?? [];
     _calendarController = CalendarController();
     _animationController = AnimationController(
       vsync: this,
@@ -49,8 +47,7 @@ class _CalenderViewState extends State<CalenderView>
 
   void _onDaySelected(DateTime day, dynamic todos) {
     setState(() {
-      _selectedDay = day;
-      _selectedTodos = List<Todo>.from(todos);
+      _selectedDay = DateTime(day.year, day.month, day.day);
     });
   }
 
@@ -72,6 +69,7 @@ class _CalenderViewState extends State<CalenderView>
 
   @override
   Widget build(BuildContext context) {
+    print(widget.allTodos.todos.length);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -119,8 +117,8 @@ class _CalenderViewState extends State<CalenderView>
               FloatingActionButton(
                 backgroundColor: MyColors.purpleBlue,
                 child: Icon(Icons.add),
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                  await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => AddToDoPage(date: _selectedDay),
@@ -132,13 +130,20 @@ class _CalenderViewState extends State<CalenderView>
           ),
         ),
         Expanded(
-            child: ListView.builder(
-          itemCount: _selectedTodos.length,
-          itemBuilder: (context, index) {
-            return TodoTile(item: _selectedTodos[index]);
-          },
-        )),
+          child: _showTodosList(
+              todos: widget.allTodos.calenderMap[_selectedDay] ?? []),
+        ),
       ],
+    );
+  }
+
+  Widget _showTodosList({@required List<Todo> todos}) {
+    print(todos);
+    return ListView.builder(
+      itemCount: todos.length,
+      itemBuilder: (context, index) {
+        return TodoTile(item: todos[index]);
+      },
     );
   }
 }

@@ -29,7 +29,7 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
 
   Stream<ToDoState> _mapLoadTodosToState() async* {
     try {
-      final List<Todo> todos = await _toDoRepository.loadTodos();
+      List<Todo> todos = await _toDoRepository.loadTodos();
       Map<DateTime, List<Todo>> calenderMap =
           _updateEventsDateMap(todos: todos);
       yield TodosLoaded(AllTodos(todos: todos, calenderMap: calenderMap));
@@ -40,9 +40,9 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
 
   Stream<ToDoState> _mapAddTodoToState(AddTodo event) async* {
     if (state is TodosLoaded) {
-      final List<Todo> updatedTodos = (state as TodosLoaded).allTodos.todos
+      List<Todo> updatedTodos = (state as TodosLoaded).allTodos.todos
         ..add(event.todo);
-      final Map<DateTime, List<Todo>> updatedCalenderMap =
+      Map<DateTime, List<Todo>> updatedCalenderMap =
           _updateEventsDateMap(todos: updatedTodos);
 
       yield TodosLoaded(
@@ -53,12 +53,14 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
 
   Stream<ToDoState> _mapUpdateTodoToState(UpdateTodo event) async* {
     if (state is TodosLoaded) {
-      final List<Todo> updatedTodos =
+      List<Todo> updatedTodos =
           (state as TodosLoaded).allTodos.todos.map((todo) {
         return todo.id == event.updatedTodo.id ? event.updatedTodo : todo;
       }).toList();
-      final Map<DateTime, List<Todo>> updatedCalenderMap =
+      print(updatedTodos.length);
+      Map<DateTime, List<Todo>> updatedCalenderMap =
           _updateEventsDateMap(todos: updatedTodos);
+      print(updatedCalenderMap.keys.length);
       yield TodosLoaded(
           AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
       _saveTodos(updatedTodos);
@@ -67,12 +69,12 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
 
   Stream<ToDoState> _mapDeleteTodoToState(DeleteTodo event) async* {
     if (state is TodosLoaded) {
-      final updatedTodos = (state as TodosLoaded)
+      List<Todo> updatedTodos = (state as TodosLoaded)
           .allTodos
           .todos
           .where((todo) => todo.id != event.todo.id)
           .toList();
-      final Map<DateTime, List<Todo>> updatedCalenderMap =
+      Map<DateTime, List<Todo>> updatedCalenderMap =
           _updateEventsDateMap(todos: updatedTodos);
       yield TodosLoaded(
           AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
