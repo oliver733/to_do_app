@@ -4,7 +4,7 @@ import 'package:to_do_list/data/to_do_model.dart';
 import 'package:to_do_list/data/to_do_repository.dart';
 import './bloc.dart';
 
-class ToDoBloc extends Bloc<ToDoEvent, ToDoState> {
+class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
   final ToDoRepository _toDoRepository = ToDoRepository();
 
   @override
@@ -26,6 +26,7 @@ class ToDoBloc extends Bloc<ToDoEvent, ToDoState> {
   }
 
   Stream<ToDoState> _mapLoadTodosToState() async* {
+    print("loading todos");
     try {
       final List<Todo> todos = await _toDoRepository.loadTodos();
       yield TodosLoaded(todos);

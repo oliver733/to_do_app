@@ -3,7 +3,9 @@ import 'package:to_do_list/data/to_do_model.dart';
 
 class ToDoRepository {
   Future<List<Todo>> loadTodos() async {
-    List<Todo> todos = []; //TODO: get todos from sql..
+    List<Todo> todos = [
+      Todo("Task.. ", complete: false, dateTime: DateTime.now())
+    ]; //TODO: get todos from sql..
 
     return todos;
   }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:to_do_list/colors.dart';
+import 'package:to_do_list/data/bloc/bloc.dart';
+import 'package:to_do_list/data/bloc/to_do_bloc.dart';
+import 'package:to_do_list/data/bloc/to_do_event.dart';
 import 'package:to_do_list/ui/calender_view.dart';
 import 'package:to_do_list/ui/widgets/cirlce_tab_indicator.dart';
 
@@ -40,18 +44,32 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ],
       ),
       body: SafeArea(
-        child: Container(
-            padding: EdgeInsets.all(10),
-            child: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: _tabController,
-              children: <Widget>[
-                CalenderView(),
-                DeadlineView(),
-              ],
-            )),
+        child: Container(padding: EdgeInsets.all(10), child: _body()),
       ),
     );
+  }
+
+  Widget _body() {
+    return BlocBuilder<TodoBloc, ToDoState>(builder: (context, toDoState) {
+      if (toDoState is TodosLoaded) {
+        return TabBarView(
+          physics: NeverScrollableScrollPhysics(),
+          controller: _tabController,
+          children: <Widget>[
+            CalenderView(
+              todos: toDoState.todos,
+            ),
+            DeadlineView(
+              todos: toDoState.todos,
+            ),
+          ],
+        );
+      } else {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+    });
   }
 
   Widget _calenderDeadlinesSwitch() {

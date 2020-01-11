@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:to_do_list/colors.dart';
 import 'package:intl/intl.dart';
+import 'package:to_do_list/data/bloc/bloc.dart';
+import 'package:to_do_list/data/to_do_model.dart';
 
 class AddToDoPage extends StatefulWidget {
   final DateTime date;
@@ -12,11 +15,13 @@ class AddToDoPage extends StatefulWidget {
 }
 
 class _AddToDoPageState extends State<AddToDoPage> {
+  TextEditingController _textController;
   TimeOfDay _selectedTime;
   DateTime _selectedDate;
 
   @override
   void initState() {
+    _textController = TextEditingController();
     if (widget.date != null) {
       _selectedDate = widget.date;
     }
@@ -74,7 +79,10 @@ class _AddToDoPageState extends State<AddToDoPage> {
                   fontSize: 20),
             ),
             onPressed: () {
-              //
+              Todo todo = Todo(_textController.text,
+                  complete: false, dateTime: _selectedDate); //TODO: improve
+              BlocProvider.of<TodoBloc>(context).add(AddTodo(todo));
+              Navigator.pop(context);
             },
           )
         ],
@@ -89,6 +97,7 @@ class _AddToDoPageState extends State<AddToDoPage> {
       child: ListView(
         children: <Widget>[
           TextField(
+            controller: _textController,
             autofocus: true,
             maxLines: 4,
             style: TextStyle(

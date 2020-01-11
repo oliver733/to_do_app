@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/data/to_do_model.dart';
+
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:to_do_list/data/to_do_model.dart';
 import 'package:to_do_list/ui/to_do_tile.dart';
 import 'package:intl/intl.dart';
 import '../colors.dart';
 import 'add_to_do_page.dart';
 
 class CalenderView extends StatefulWidget {
+  final List<Todo> todos;
+
+  CalenderView({@required this.todos});
+
   @override
   _CalenderViewState createState() => _CalenderViewState();
 }
@@ -119,10 +124,11 @@ class _CalenderViewState extends State<CalenderView>
                 child: Icon(Icons.add),
                 onPressed: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              AddToDoPage(date: _selectedDay)));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddToDoPage(date: _selectedDay),
+                    ),
+                  );
                 },
               )
             ],
@@ -130,9 +136,9 @@ class _CalenderViewState extends State<CalenderView>
         ),
         Expanded(
             child: ListView.builder(
-          itemCount: 4, //TODO: actual lenght.
+          itemCount: widget.todos.length,
           itemBuilder: (context, index) {
-            return TodoTile(item: Todo("Task", complete: true, note: ''));
+            return TodoTile(item: widget.todos[index]);
           },
         )),
       ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:to_do_list/colors.dart';
+import 'package:to_do_list/data/bloc/bloc.dart';
 import 'package:to_do_list/data/to_do_model.dart';
 import 'package:intl/intl.dart';
 
@@ -16,7 +18,7 @@ class TodoTile extends StatelessWidget {
       secondaryActions: [
         GestureDetector(
           onTap: () {
-            //TODO: remove via bloc
+            BlocProvider.of<TodoBloc>(context).add(DeleteTodo(item));
           },
           child: Container(
             height: double.infinity,
@@ -42,13 +44,17 @@ class TodoTile extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18.0),
           ),
-          color: MyColors.purpleBlue,
+          color: item.complete ? MyColors.lightGrey2 : MyColors.purpleBlue,
           child: ListTile(
             contentPadding: EdgeInsets.all(15),
             // dense: true,
             title: Text(
               item.task,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                  color: Colors.white,
+                  decoration: item.complete
+                      ? TextDecoration.lineThrough
+                      : TextDecoration.none),
             ),
             leading: Text(
               item.dateTime != null
@@ -56,7 +62,22 @@ class TodoTile extends StatelessWidget {
                   : "--:--",
               style: TextStyle(color: Colors.white),
             ),
-            trailing: Icon(Icons.check_box, color: Colors.white),
+            trailing: IconButton(
+              onPressed: () {
+                BlocProvider.of<TodoBloc>(context).add(
+                  UpdateTodo(
+                    item.copyWith(
+                      complete: !item.complete,
+                    ),
+                  ),
+                );
+              },
+              icon: Icon(
+                  item.complete
+                      ? Icons.check_box
+                      : Icons.check_box_outline_blank,
+                  color: Colors.white),
+            ),
           ),
         ),
       ),

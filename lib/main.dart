@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:to_do_list/colors.dart';
+import 'package:to_do_list/data/bloc/bloc.dart';
 import 'package:to_do_list/strings.dart';
 import 'package:to_do_list/ui/home_page.dart';
 
@@ -11,7 +13,9 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return BlocProvider<TodoBloc>(
+      create: (context) => TodoBloc()..add(LoadTodos()),
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           textTheme: GoogleFonts.ubuntuTextTheme(),
@@ -33,6 +37,8 @@ class MyApp extends StatelessWidget {
               shape: StadiumBorder()),
         ),
         title: MyStrings.appName,
-        home: HomePage());
+        home: HomePage(),
+      ),
+    );
   }
 }
