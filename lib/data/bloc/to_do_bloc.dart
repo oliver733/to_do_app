@@ -57,10 +57,10 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
           (state as TodosLoaded).allTodos.todos.map((todo) {
         return todo.id == event.updatedTodo.id ? event.updatedTodo : todo;
       }).toList();
-      print(updatedTodos.length);
+
       Map<DateTime, List<Todo>> updatedCalenderMap =
           _updateEventsDateMap(todos: updatedTodos);
-      print(updatedCalenderMap.keys.length);
+
       yield TodosLoaded(
           AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
       _saveTodos(updatedTodos);

@@ -15,15 +15,28 @@ class DeadlineView extends StatefulWidget {
 }
 
 class _DeadlineViewState extends State<DeadlineView> {
+  List<Todo> getDeadlineTodos() {
+    List<Todo> deadlines = [];
+
+    widget.todos.forEach((todo) {
+      if (todo.dateType == DateType.dueDay) {
+        deadlines.add(todo);
+      }
+    });
+
+    return deadlines;
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Todo> deadlines = getDeadlineTodos();
     return Column(
       children: <Widget>[
         Expanded(
           child: ListView.builder(
-            itemCount: widget.todos.length,
+            itemCount: deadlines.length,
             itemBuilder: (context, index) {
-              return TodoTile(item: widget.todos[index]);
+              return TodoTile(item: deadlines[index]);
             },
           ),
         ),

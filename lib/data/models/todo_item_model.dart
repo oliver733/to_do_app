@@ -1,25 +1,35 @@
 import 'package:equatable/equatable.dart';
 import 'package:uuid/uuid.dart';
 
+enum DateType { onDay, dueDay }
+
 class Todo extends Equatable {
   final bool complete;
   final String id;
   final DateTime dateTime;
+  final DateType dateType;
   final String task;
 
   Todo(
     this.task, {
     this.complete = false,
     this.dateTime,
+    this.dateType = DateType.onDay,
     String id,
   }) : this.id = id ?? Uuid().v4();
 
-  Todo copyWith({bool complete, String id, String task, DateTime dateTime}) {
-    // datetime TODO:
+  Todo copyWith({
+    bool complete,
+    String id,
+    String task,
+    DateTime dateTime,
+    DateType dateType,
+  }) {
     return Todo(
       task ?? this.task,
       complete: complete ?? this.complete,
-      dateTime: this.dateTime,
+      dateTime: dateTime ?? this.dateTime,
+      dateType: dateType ?? this.dateType,
       id: id ?? this.id,
     );
   }

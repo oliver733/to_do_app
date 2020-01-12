@@ -18,6 +18,7 @@ class _AddToDoPageState extends State<AddToDoPage> {
   TextEditingController _textController;
   TimeOfDay _selectedTime;
   DateTime _selectedDate;
+  DateType _selectedDateType = DateType.onDay;
 
   @override
   void initState() {
@@ -80,7 +81,9 @@ class _AddToDoPageState extends State<AddToDoPage> {
             ),
             onPressed: () {
               Todo todo = Todo(_textController.text,
-                  complete: false, dateTime: _selectedDate); //TODO: improve
+                  complete: false,
+                  dateTime: _selectedDate,
+                  dateType: _selectedDateType); //TODO: improve
               BlocProvider.of<TodoBloc>(context).add(AddTodo(todo));
               Navigator.pop(context);
             },
@@ -118,10 +121,10 @@ class _AddToDoPageState extends State<AddToDoPage> {
           Column(
             children: <Widget>[
               ListTile(
+                contentPadding: EdgeInsets.all(0),
                 onTap: () async {
                   _selectTime();
                 },
-                contentPadding: EdgeInsets.all(0),
                 leading: Icon(Icons.access_time),
                 title: _selectedTime == null
                     ? Text(
@@ -132,10 +135,10 @@ class _AddToDoPageState extends State<AddToDoPage> {
                         .formatTimeOfDay(_selectedTime)),
               ),
               ListTile(
+                contentPadding: EdgeInsets.all(0),
                 onTap: () {
                   _selectDate();
                 },
-                contentPadding: EdgeInsets.all(0),
                 leading: Icon(Icons.calendar_today),
                 title: _selectedDate == null
                     ? Text(
@@ -143,6 +146,27 @@ class _AddToDoPageState extends State<AddToDoPage> {
                         style: TextStyle(fontStyle: FontStyle.italic),
                       )
                     : Text("${DateFormat.yMMMd().format(_selectedDate)}"),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: Icon(Icons.date_range),
+                title: Text("Set as due date"),
+                trailing: Checkbox(
+                  value: (_selectedDateType == DateType.dueDay),
+                  onChanged: _selectedDate == null
+                      ? null
+                      : (value) {
+                          if (value) {
+                            setState(() {
+                              _selectedDateType = DateType.dueDay;
+                            });
+                          } else {
+                            setState(() {
+                              _selectedDateType = DateType.onDay;
+                            });
+                          }
+                        },
+                ),
               ),
             ],
           )
