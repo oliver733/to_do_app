@@ -34,6 +34,26 @@ class Todo extends Equatable {
     );
   }
 
+  Todo.fromMap(Map<String, dynamic> map)
+      : id = map['id'],
+        complete = (map['complete'] == 1),
+        dateTime = map['dateTime'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(map['dateTime'])
+            : null,
+        dateType =
+            map['dateType'] == 'dueDay' ? DateType.dueDay : DateType.onDay,
+        task = map['task'];
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'task': task,
+      'complete': complete ? 1 : 0,
+      'dateTime': dateTime.millisecondsSinceEpoch,
+      'dateType': (dateType == DateType.dueDay ? 'dueDay' : 'onDay'),
+    };
+  }
+
   @override
   List<Object> get props => [complete, id, task];
 
@@ -41,17 +61,4 @@ class Todo extends Equatable {
   String toString() {
     return 'Todo { complete: $complete, task: $task, id: $id }';
   }
-
-  // TodoEntity toEntity() {
-  //   return TodoEntity(task, id, note, complete);
-  // }
-
-  // static Todo fromEntity(TodoEntity entity) {
-  //   return Todo(
-  //     entity.task,
-  //     complete: entity.complete ?? false,
-  //     note: entity.note,
-  //     id: entity.id ?? Uuid().generateV4(),
-  //   );
-  // }
 }

@@ -3,11 +3,11 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do_list/data/models/all_todos_model.dart';
 import 'package:to_do_list/data/models/todo_item_model.dart';
-import 'package:to_do_list/data/to_do_repository.dart';
+import 'package:to_do_list/data/todo_database.dart';
 import './bloc.dart';
 
 class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
-  final ToDoRepository _toDoRepository = ToDoRepository();
+  final TodoDatabase _todoDatabase = TodoDatabase();
 
   @override
   ToDoState get initialState => InitialToDoState();
@@ -29,7 +29,7 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
 
   Stream<ToDoState> _mapLoadTodosToState() async* {
     try {
-      List<Todo> todos = await _toDoRepository.loadTodos();
+      List<Todo> todos = await _todoDatabase.todos();
       Map<DateTime, List<Todo>> calenderMap =
           _updateEventsDateMap(todos: todos);
       yield TodosLoaded(AllTodos(todos: todos, calenderMap: calenderMap));
@@ -44,10 +44,10 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
         ..add(event.todo);
       Map<DateTime, List<Todo>> updatedCalenderMap =
           _updateEventsDateMap(todos: updatedTodos);
-
+      await _todoDatabase.insertTodo(
+          todo: event.todo); //TODO: after yielding state ?
       yield TodosLoaded(
           AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
-      _saveTodos(updatedTodos);
     }
   }
 
@@ -60,10 +60,10 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
 
       Map<DateTime, List<Todo>> updatedCalenderMap =
           _updateEventsDateMap(todos: updatedTodos);
-
+      await _todoDatabase.updateTodo(
+          todo: event.updatedTodo); //TODO: after yielding state ?
       yield TodosLoaded(
           AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
-      _saveTodos(updatedTodos);
     }
   }
 
@@ -76,16 +76,11 @@ class TodoBloc extends Bloc<ToDoEvent, ToDoState> {
           .toList();
       Map<DateTime, List<Todo>> updatedCalenderMap =
           _updateEventsDateMap(todos: updatedTodos);
+      await _todoDatabase.deleteTodo(
+          id: event.todo.id); //TODO: after yielding state ?
       yield TodosLoaded(
           AllTodos(todos: updatedTodos, calenderMap: updatedCalenderMap));
-      _saveTodos(updatedTodos);
     }
-  }
-
-  Future _saveTodos(List<Todo> todos) {
-    return _toDoRepository.saveTodos(todos: todos
-        // todos.map((todo) => todo.toEntity()).toList(),
-        );
   }
 
   Map<DateTime, List<Todo>> _updateEventsDateMap({@required List<Todo> todos}) {
